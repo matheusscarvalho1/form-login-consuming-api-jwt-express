@@ -1,10 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
+import Profile from "./components/profile";
 
 function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const init = async () => {
+      // pegar accessToken do Local Storage
+      const accessToken = localStorage.getItem("accessToken");
+      // chamar rota /profile com accessToken
+      try {
+        await axios.get("http://localhost:8080/api/v1/user/get/profile", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();
+  }, []);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
@@ -22,14 +47,18 @@ function App() {
 
       setEmail("");
       setPassword("");
-      alert(`Welcome ${response.data.data.user.name}!`);
+      setIsAuthenticated(true);
+      alert(`Welcome ${response.data.data.user.firstName}!`);
     } catch (error) {
       alert("Login failed!");
       console.error(error);
     }
-    // chamar a minha rota de /login
-    // armazenar os tokens no local storage
   };
+
+  if (isAuthenticated) {
+    return <Profile />;
+  }
+
   return (
     <>
       <div className="h-screen w-screen flex items-center justify-center bg-slate-800">
