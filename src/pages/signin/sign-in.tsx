@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../../services/api";
+import { useNavigate } from "react-router";
 
 interface IRegisterData {
   firstName: string;
@@ -22,7 +23,12 @@ const SignIn = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
+  const handleReturnToHomePage = () => {
+    navigate("/");
+
+  }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -280,13 +286,22 @@ const SignIn = () => {
             )}
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-[#7065f0] py-3 font-semibold hover:bg-[#5a54d1] focus:outline-none focus:ring-4 focus:ring-[#5849c2] disabled:opacity-50 transition"
-          >
+          <div className="flex flex-col gap-3">
+            <button
+              type="submit"
+              disabled={loading}
+              className="cursor-pointer w-full rounded-lg bg-[#7065f0] py-3 font-semibold hover:bg-[#5a54d1] focus:outline-none focus:ring-4 focus:ring-[#5849c2] disabled:opacity-50 transition"
+            >
             {loading ? "Cadastrando..." : "Cadastrar"}
-          </button>
+            </button>
+            <button 
+              type="button" 
+              className="cursor-pointer w-full rounded-lg bg-[#7065f0] py-3 font-semibold hover:bg-[#5a54d1] focus:outline-none focus:ring-4 focus:ring-[#5849c2] disabled:opacity-50 transition" 
+              onClick={handleReturnToHomePage}>
+                Voltar
+            </button>
+          </div>
+          
         </form>
       </section>
     </main>

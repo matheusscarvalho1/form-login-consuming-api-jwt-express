@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Profile from "../profile/profile";
 import api from "../../services/api";
+import { useNavigate } from "react-router";
 
 function LogIn() {
   const [email, setEmail] = useState("");
@@ -8,6 +9,12 @@ function LogIn() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loginLoading, setLoginLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleReturnToHomePage = () => {
+    navigate("/");
+
+  }
 
   useEffect(() => {
     const init = async () => {
@@ -108,10 +115,11 @@ function LogIn() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button
+        <div className="flex flex-col gap-3">
+          <button
           type="submit"
           disabled={loginLoading}
-          className={`rounded-md px-4 py-2 font-medium transition-all duration-300 ${
+          className={`rounded-md px-4 py-2 font-medium transition-all duration-300 cursor-pointer ${
             loginLoading
               ? "bg-[#55557d] text-white cursor-not-allowed"
               : "bg-[#7065f0] hover:bg-[#5d52dc] text-white"
@@ -119,7 +127,11 @@ function LogIn() {
         >
           {loginLoading ? "Entrando..." : "Entrar"}
         </button>
+        <button type="button" className={`rounded-md cursor-pointer px-4 py-2 font-medium transition-all duration-300 bg-[#7065f0] hover:bg-[#5d52dc] text-white`} onClick={handleReturnToHomePage}>Voltar</button>
+        </div>
+        
       </form>
+      
     </div>
   );
 }

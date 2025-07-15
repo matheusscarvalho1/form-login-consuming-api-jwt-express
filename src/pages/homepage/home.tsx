@@ -17,16 +17,16 @@ const HomePage = () => {
         <h1 className="text-4xl font-semibold text-[#7065f0] text-center">
           Sejam bem vindos a Homepage!
         </h1>
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3">
           <button
             onClick={handleLogin}
-            className="rounded-md px-6 py-3 font-medium bg-[#7065f0] hover:bg-[#5d52dc] text-white transition"
+            className="cursor-pointer rounded-md px-6 py-3 font-medium bg-[#7065f0] hover:bg-[#5d52dc] text-white transition"
           >
             Já possui cadastro? Acesse agora!
           </button>
           <button
             onClick={handleRegister}
-            className="rounded-md px-6 py-3 font-medium bg-[#55557d] hover:bg-[#44446a] text-white transition"
+            className="cursor-pointer rounded-md px-6 py-3 font-medium bg-[#55557d] hover:bg-[#44446a] text-white transition"
           >
             Ainda não possui cadastro? Crie um agora mesmo!
           </button>
