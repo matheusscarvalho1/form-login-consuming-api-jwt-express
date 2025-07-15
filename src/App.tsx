@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import axios from "axios";
 import Profile from "./components/profile";
+import api from "./services/api";
 
 function App() {
   const [email, setEmail] = useState("");
@@ -20,7 +20,7 @@ function App() {
       }
 
       try {
-        await axios.get("http://localhost:8080/api/v1/user/get/profile", {
+        await api.get("/user/get/profile", {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -46,8 +46,8 @@ function App() {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/authenticate/user",
+      const response = await api.post(
+        "/authenticate/user",
         { email, password }
       );
 
