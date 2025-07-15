@@ -61,11 +61,17 @@ const Profile = () => {
     );
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    window.location.reload();
+  };
+
   return (
     <div className="h-screen w-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 px-4">
       <h1 className="text-3xl font-bold text-[#e0e0ff] mb-6">
         Bem-vindo, {user?.firstName}
       </h1>
+      
 
       <div className="bg-[#1e1e2f] border border-[#2c2c3f] shadow-lg rounded-2xl w-full max-w-md p-8 space-y-4 text-sm sm:text-base">
         <h2 className="font-semibold text-[#7065f0] text-2xl text-center">
@@ -87,6 +93,11 @@ const Profile = () => {
           <span className="font-semibold text-[#7065f0]">Idade:</span>{" "}
           {user?.age}
         </p>
+      </div>
+      <div className="mt-6">
+        <button className="bg-[#7065f0] text-white font-semibold py-2 px-4 rounded-lg hover:bg-[#5a54d1] transition-colors" onClick={handleLogout}>
+          Desconectar
+        </button>
       </div>
     </div>
   );
