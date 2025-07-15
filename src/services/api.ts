@@ -7,7 +7,7 @@ console.log("Base URL: ", apiBaseUrl)
 console.log("Local URL: ", apiLocalUrl)
 
 const api = axios.create({
-  baseURL: apiLocalUrl // ou apiBaseUrl dependendo do ambiente
+  baseURL: apiBaseUrl // ou apiBaseUrl dependendo do ambiente
 })
 
 export default api
