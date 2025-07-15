@@ -51,11 +51,17 @@ function App() {
         { email, password }
       );
 
-      const { accessToken, refreshToken } = response.data.data.tokens;
+      const tokens = response?.data?.data?.tokens;
 
-      if (accessToken && refreshToken) {
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
+        if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
+          alert("Erro: tokens não foram retornados pela API.");
+          console.error("Resposta da API:", response.data);
+          return;
+        }
+
+      if (tokens.accessToken && tokens.refreshToken) {
+        localStorage.setItem("accessToken", tokens.accessToken);
+        localStorage.setItem("refreshToken", tokens.refreshToken);
 
         setEmail("");
         setPassword("");
