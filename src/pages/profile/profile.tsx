@@ -1,5 +1,5 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
+import api from "../../services/api";
 
 interface IUser {
   firstName: string;
@@ -24,8 +24,8 @@ const Profile = () => {
       }
 
       try {
-        const response = await axios.get<{ message: string; data: IUser }>(
-          `http://localhost:8080/api/v1/user/get/profile`,
+        const response = await api.get<{ message: string; data: IUser }>(
+          `/user/get/profile`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
