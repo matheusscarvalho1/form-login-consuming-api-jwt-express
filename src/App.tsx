@@ -72,7 +72,7 @@ function App() {
         alert("Falha no login: dados inválidos.");
       }
     } catch (error) {
-      alert("Erro ao realizar login.");
+      alert("Erro ao realizar login, confira os dados informados nos campos.");
       console.error("Erro:", error);
     } finally {
       setLoginLoading(false);
