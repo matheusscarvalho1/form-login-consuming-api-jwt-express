@@ -1,310 +1,228 @@
-import { useState } from "react";
-import api from "../../services/api";
-import { useNavigate } from "react-router";
+"use client"
 
-interface IRegisterData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  age: number | "";
-  password: string;
-}
+ import { useState } from "react";
+// import api from "../../services/api";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input"
+import { z } from "zod";
+import { toast } from "sonner"
+import { useNavigate } from "react-router";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { InfoCircledIcon } from '@radix-ui/react-icons';
+import { Button } from "@/components/ui/button";
+import api from "@/services/api";
+
+
+
 
 const SignIn = () => {
-  const [formData, setFormData] = useState<IRegisterData>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    age: "",
-    password: "",
-  });
+  // const [formData, setFormData] = useState<IRegisterData>({
+  //   firstName: "",
+  //   lastName: "",
+  //   email: "",
+  //   age: "",
+  //   password: "",
+  // });
 
-  const [loading, setLoading] = useState(false);
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [generalError, setGeneralError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const navigate = useNavigate();
+   const [loading, setLoading] = useState(false);
+  // const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  // const [generalError, setGeneralError] = useState<string | null>(null);
+  // const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+   const navigate = useNavigate();
+
 
   const handleReturnToHomePage = () => {
     navigate("/");
 
   }
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "age" ? (value === "" ? "" : Number(value)) : value,
-    }));
 
-    if (formErrors[name]) {
-      setFormErrors((prev) => ({ ...prev, [name]: "" }));
+  
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: name === "age" ? (value === "" ? "" : Number(value)) : value,
+  //   }));
+
+  //   if (formErrors[name]) {
+  //     setFormErrors((prev) => ({ ...prev, [name]: "" }));
+  //   }
+  // };
+
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setGeneralError(null);
+  //   setSuccessMessage(null);
+
+  //   if (!validate()) {
+  //     setGeneralError("Por favor, corrija os erros acima antes de continuar.");
+  //     return;
+  //   }
+
+  //   
+  // };
+ 
+  const formSchema = z.object({
+    firstName: z.string().trim().min(2, {
+      error: 'É obrigatório inserir seu nome'
+    }),
+    lastName: z.string().trim().min(2, {
+      error: 'É obrigatório inserir seu sobrenome'
+    }),
+    email: z.email({
+      error: 'É obrigatório inserir seu e-mail válido'
+    }),
+    age: z.number().min(2, {
+      error: 'É obrigatório inserir sua idade'
+    }),
+    password: z.string().min(6, {
+      error: "A senha deve ter no mínimo 6 caracteres"
+    })
+    .regex(/[A-Z]/, { message: "A senha deve conter pelo menos uma letra maiúscula" })
+    .regex(/[a-z]/, { message: "A senha deve conter pelo menos uma letra minúscula" })
+    .regex(/[0-9]/, { message: "A senha deve conter pelo menos um número" })
+    .regex(/[^A-Za-z0-9]/, { message: "A senha deve conter pelo menos um caractere especial" }),
+  });
+
+
+type FormSchema = z.infer<typeof formSchema>
+
+  const form = useForm<FormSchema>({
+    resolver: zodResolver(formSchema),
+    defaultValues:{
+      firstName: "",
+      lastName: "",
+      email: "",
+      age: 0,
+      password: "",
     }
-  };
+  })
 
-  const validate = () => {
-    const errors: Record<string, string> = {};
 
-    if (!formData.firstName.trim()) errors.firstName = "Primeiro nome é obrigatório.";
-    if (!formData.lastName.trim()) errors.lastName = "Sobrenome é obrigatório.";
-    if (!formData.email.trim()) errors.email = "Email é obrigatório.";
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Email inválido.";
-    if (formData.age === "") errors.age = "Idade é obrigatória.";
-    else if (formData.age <= 0) errors.age = "Idade deve ser maior que zero.";
-    if (!formData.password) errors.password = "Senha é obrigatória.";
-    else if (formData.password.length < 6) errors.password = "Senha deve ter ao menos 6 caracteres.";
-
-    setFormErrors(errors);
-
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setGeneralError(null);
-    setSuccessMessage(null);
-
-    if (!validate()) {
-      setGeneralError("Por favor, corrija os erros acima antes de continuar.");
-      return;
-    }
-
-    setLoading(true);
+const onSubmit = async (data: FormSchema) => {
+  toast("You submitted the following values")
+  setLoading(true);
 
     try {
-      await api.post("/user/register", formData);
+      await api.post("/user/create", data);
 
-      setSuccessMessage("Cadastro realizado com sucesso! Agora você pode fazer login.");
-      setFormData({ firstName: "", lastName: "", email: "", age: "", password: "" });
-      setFormErrors({});
     } catch (err) {
-      setGeneralError("Erro ao cadastrar. Por favor, tente novamente mais tarde.");
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  console.log({ data });
+}
 
   return (
-    <main className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-gray-900 to-gray-800 p-4 text-gray-100">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-gray-900 to-gray-800 p-4 text-gray-100">
       <section className="bg-[#1e1e2f] border border-[#2c2c3f] rounded-3xl shadow-lg max-w-md w-full p-8">
-        <h1 className="text-3xl font-semibold text-center mb-6 text-[#e0e0ff]">
+         <h1 className="text-2xl font-semibold text-[#7065f0] text-center">
           Criar Conta
         </h1>
-
-        {generalError && (
-          <p
-            role="alert"
-            className="mb-4 text-center text-red-500 font-medium"
-          >
-            {generalError}
-          </p>
-        )}
-
-        {successMessage && (
-          <p
-            role="status"
-            className="mb-4 text-center text-green-400 font-medium"
-          >
-            {successMessage}
-          </p>
-        )}
-
-        <form onSubmit={handleSubmit} noValidate>
-          {/* Primeiro Nome */}
-          <div className="mb-5">
-            <label
-              htmlFor="firstName"
-              className="block mb-1 font-semibold text-gray-300"
-            >
-              Primeiro Nome <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              id="firstName"
-              name="firstName"
-              autoComplete="given-name"
-              value={formData.firstName}
-              onChange={handleChange}
-              aria-invalid={!!formErrors.firstName}
-              aria-describedby="firstName-error"
-              className={`w-full rounded-lg bg-[#2c2c3f] border px-4 py-3 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7065f0] ${
-                formErrors.firstName
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-transparent"
-              }`}
-              placeholder="Digite seu primeiro nome"
-            />
-            {formErrors.firstName && (
-              <p
-                id="firstName-error"
-                className="mt-1 text-red-500 text-sm"
-                role="alert"
-              >
-                {formErrors.firstName}
-              </p>
-            )}
-          </div>
-
-          {/* Sobrenome */}
-          <div className="mb-5">
-            <label
-              htmlFor="lastName"
-              className="block mb-1 font-semibold text-gray-300"
-            >
-              Sobrenome <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              id="lastName"
+        <div className="mt-5">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Primeiro Nome</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Digite o seu nome" {...field}
+                        className="bg-[#2b2b3c] border border-[#44445a] rounded-md px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7065f0]"
+                      />
+                    </FormControl>
+                    <FormMessage/>
+                  </FormItem>
+                )}
+              />
+            <FormField
+              control={form.control}
               name="lastName"
-              autoComplete="family-name"
-              value={formData.lastName}
-              onChange={handleChange}
-              aria-invalid={!!formErrors.lastName}
-              aria-describedby="lastName-error"
-              className={`w-full rounded-lg bg-[#2c2c3f] border px-4 py-3 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7065f0] ${
-                formErrors.lastName
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-transparent"
-              }`}
-              placeholder="Digite seu sobrenome"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sobrenome</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Digite seu sobrenome" {...field}
+                    className="bg-[#2b2b3c] border border-[#44445a] rounded-md px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7065f0]" />
+                  </FormControl>
+                  <FormMessage/>
+                </FormItem>
+              )}
             />
-            {formErrors.lastName && (
-              <p
-                id="lastName-error"
-                className="mt-1 text-red-500 text-sm"
-                role="alert"
-              >
-                {formErrors.lastName}
-              </p>
-            )}
-          </div>
-
-          {/* Email */}
-          <div className="mb-5">
-            <label
-              htmlFor="email"
-              className="block mb-1 font-semibold text-gray-300"
-            >
-              Email <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="email"
-              id="email"
+            <FormField
+              control={form.control}
               name="email"
-              autoComplete="email"
-              value={formData.email}
-              onChange={handleChange}
-              aria-invalid={!!formErrors.email}
-              aria-describedby="email-error"
-              className={`w-full rounded-lg bg-[#2c2c3f] border px-4 py-3 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7065f0] ${
-                formErrors.email
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-transparent"
-              }`}
-              placeholder="Digite seu email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Digite seu e-mail" {...field}
+                    className="bg-[#2b2b3c] border border-[#44445a] rounded-md px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7065f0]" />
+                  </FormControl>
+                  <FormMessage/>
+                </FormItem>
+              )}
             />
-            {formErrors.email && (
-              <p
-                id="email-error"
-                className="mt-1 text-red-500 text-sm"
-                role="alert"
-              >
-                {formErrors.email}
-              </p>
-            )}
-          </div>
-
-          {/* Idade */}
-          <div className="mb-5">
-            <label
-              htmlFor="age"
-              className="block mb-1 font-semibold text-gray-300"
-            >
-              Idade <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              id="age"
+            <FormField
+              control={form.control}
               name="age"
-              min={1}
-              max={120}
-              value={formData.age === "" ? "" : formData.age}
-              onChange={handleChange}
-              aria-invalid={!!formErrors.age}
-              aria-describedby="age-error"
-              className={`w-full rounded-lg bg-[#2c2c3f] border px-4 py-3 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7065f0] ${
-                formErrors.age
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-transparent"
-              }`}
-              placeholder="Digite sua idade"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Idade</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Digite sua idade" {...field}
+                    className="bg-[#2b2b3c] border border-[#44445a] rounded-md px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7065f0]" />
+                  </FormControl>
+                  <FormMessage/>
+                </FormItem>
+              )}
             />
-            {formErrors.age && (
-              <p
-                id="age-error"
-                className="mt-1 text-red-500 text-sm"
-                role="alert"
-              >
-                {formErrors.age}
-              </p>
-            )}
-          </div>
-
-          {/* Senha */}
-          <div className="mb-5">
-            <label
-              htmlFor="password"
-              className="block mb-1 font-semibold text-gray-300"
-            >
-              Senha <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="password"
-              id="password"
+            <FormField
+              control={form.control}
               name="password"
-              autoComplete="new-password"
-              value={formData.password}
-              onChange={handleChange}
-              aria-invalid={!!formErrors.password}
-              aria-describedby="password-error"
-              className={`w-full rounded-lg bg-[#2c2c3f] border px-4 py-3 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7065f0] ${
-                formErrors.password
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-transparent"
-              }`}
-              placeholder="Crie uma senha segura"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex gap-1">
+                    <FormLabel>Senha</FormLabel>
+                    <Tooltip>
+                      <TooltipTrigger><InfoCircledIcon width={15} height={15}/></TooltipTrigger>
+                      <TooltipContent>
+                        <p>A senha deve conter pelo menos uma letra minúscula, uma letra maiúscula, um caractér especial e um número</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <FormControl>
+                    <Input type="password" placeholder="Crie uma senha segura" {...field}
+                    className="bg-[#2b2b3c] border border-[#44445a] rounded-md px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7065f0]" />
+                  </FormControl>
+                  <FormMessage/>
+                </FormItem>
+              )}
             />
-            {formErrors.password && (
-              <p
-                id="password-error"
-                className="mt-1 text-red-500 text-sm"
-                role="alert"
-              >
-                {formErrors.password}
-              </p>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <button
-              type="submit"
-              disabled={loading}
-              className="cursor-pointer w-full rounded-lg bg-[#7065f0] py-3 font-semibold hover:bg-[#5a54d1] focus:outline-none focus:ring-4 focus:ring-[#5849c2] disabled:opacity-50 transition"
-            >
-            {loading ? "Cadastrando..." : "Cadastrar"}
-            </button>
-            <button 
-              type="button" 
-              className="cursor-pointer w-full rounded-lg bg-[#7065f0] py-3 font-semibold hover:bg-[#5a54d1] focus:outline-none focus:ring-4 focus:ring-[#5849c2] disabled:opacity-50 transition" 
-              onClick={handleReturnToHomePage}>
-                Voltar
-            </button>
-          </div>
-          
-        </form>
+            <div className="flex flex-col gap-3">
+              <Button type="submit" className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]">Submit</Button>
+              <Button variant="outline" className="cursor-pointer text-black" onClick={handleReturnToHomePage}>Voltar</Button>
+            </div>
+           </form>
+           
+        </Form>
+        </div>
       </section>
-    </main>
+    </div>
+
+
+
   );
 };
 
