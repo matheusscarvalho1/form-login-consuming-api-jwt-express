@@ -108,19 +108,34 @@ type FormSchema = z.infer<typeof formSchema>
 
 
 const onSubmit = async (data: FormSchema) => {
-  toast("You submitted the following values")
+  toast("Enviando dados..."); // ou use toast.loading() se estiver usando uma lib que suporte
+
   setLoading(true);
 
-    try {
-      await api.post("/user/create", data);
+  try {
+    await api.post("/user/create", data);
+    console.log({ data });
+    toast.success("Usuário criado com sucesso!");
+  } catch (err: any) {
+    const status = err?.response?.status;
+    const message = err?.response?.data?.message;
 
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    if (status === 400) {
+      toast.error(message || "Erro nos dados enviados. Verifique os campos.");
+      console.log(status, message)
+    } else if (status === 409) {
+      toast.error(message || "Usuário já existe.");
+    } else {
+      toast.error("Erro inesperado ao criar usuário.");
     }
-  console.log({ data });
-}
+
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+
+  
+};
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-gray-900 to-gray-800 p-4 text-gray-100">
@@ -181,7 +196,8 @@ const onSubmit = async (data: FormSchema) => {
                 <FormItem>
                   <FormLabel>Idade</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite sua idade" {...field}
+                    <Input type="number" placeholder="Digite sua idade" {...field}
+                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
                     className="bg-[#2b2b3c] border border-[#44445a] rounded-md px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7065f0]" />
                   </FormControl>
                   <FormMessage/>
