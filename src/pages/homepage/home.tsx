@@ -40,7 +40,7 @@ const HomePage = () => {
           <Button type="submit" className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]" onClick={handleLogin}>
             Login
           </Button>
-          <Button variant="outline" className="w-full cursor-not-allowed">
+          <Button variant="outline" className="w-full cursor-not-allowed text-[#7065f0]">
             Login with Google
           </Button>
         </CardFooter>
