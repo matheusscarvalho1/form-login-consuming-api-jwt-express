@@ -17,58 +17,26 @@ import {
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Button } from "@/components/ui/button";
 import api from "@/services/api";
-
-
+import ProgressLoading from "../components/loading/loading";
 
 
 const SignIn = () => {
-  // const [formData, setFormData] = useState<IRegisterData>({
-  //   firstName: "",
-  //   lastName: "",
-  //   email: "",
-  //   age: "",
-  //   password: "",
-  // });
 
    const [loading, setLoading] = useState(false);
-  // const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  // const [generalError, setGeneralError] = useState<string | null>(null);
-  // const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
+  
    const navigate = useNavigate();
 
 
-  const handleReturnToHomePage = () => {
+  const handleHomePage = () => {
     navigate("/");
 
   }
 
-  
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [name]: name === "age" ? (value === "" ? "" : Number(value)) : value,
-  //   }));
-
-  //   if (formErrors[name]) {
-  //     setFormErrors((prev) => ({ ...prev, [name]: "" }));
-  //   }
-  // };
+  const handleLoginPage = () => {
+    navigate("/login")
+  }
 
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setGeneralError(null);
-  //   setSuccessMessage(null);
-
-  //   if (!validate()) {
-  //     setGeneralError("Por favor, corrija os erros acima antes de continuar.");
-  //     return;
-  //   }
-
-  //   
-  // };
  
   const formSchema = z.object({
     firstName: z.string().trim().min(2, {
@@ -108,34 +76,45 @@ type FormSchema = z.infer<typeof formSchema>
 
 
 const onSubmit = async (data: FormSchema) => {
-  toast("Enviando dados..."); // ou use toast.loading() se estiver usando uma lib que suporte
-
   setLoading(true);
 
   try {
     await api.post("/user/create", data);
-    console.log({ data });
+
     toast.success("Usuário criado com sucesso!");
+
+    setTimeout(() => {
+      handleLoginPage();
+    }, 3000)
+  
   } catch (err: any) {
     const status = err?.response?.status;
     const message = err?.response?.data?.message;
 
     if (status === 400) {
-      toast.error(message || "Erro nos dados enviados. Verifique os campos.");
-      console.log(status, message)
+      return toast.error(message || "Erro nos dados enviados. Verifique os campos.");
+     
     } else if (status === 409) {
-      toast.error(message || "Usuário já existe.");
+      return toast.error(message || "Usuário já existe.");
     } else {
-      toast.error("Erro inesperado ao criar usuário.");
+      console.error(err);
+      setLoading(false);
+      return toast.error("Erro inesperado ao criar usuário.");
     }
 
-    console.error(err);
+    
   } finally {
     setLoading(false);
   }
 
   
 };
+
+if (loading) {
+    return (
+      <ProgressLoading />
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-gray-900 to-gray-800 p-4 text-gray-100">
@@ -151,7 +130,7 @@ const onSubmit = async (data: FormSchema) => {
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Primeiro Nome</FormLabel>
+                    <FormLabel className="font-semibold text-[#7065f0]">Primeiro Nome</FormLabel>
                     <FormControl>
                       <Input placeholder="Digite o seu nome" {...field}
                         className="bg-[#2b2b3c] border border-[#44445a] rounded-md px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7065f0]"
@@ -166,7 +145,7 @@ const onSubmit = async (data: FormSchema) => {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Sobrenome</FormLabel>
+                  <FormLabel className="font-semibold text-[#7065f0]">Sobrenome</FormLabel>
                   <FormControl>
                     <Input placeholder="Digite seu sobrenome" {...field}
                     className="bg-[#2b2b3c] border border-[#44445a] rounded-md px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7065f0]" />
@@ -180,7 +159,7 @@ const onSubmit = async (data: FormSchema) => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="font-semibold text-[#7065f0]">Email</FormLabel>
                   <FormControl>
                     <Input placeholder="Digite seu e-mail" {...field}
                     className="bg-[#2b2b3c] border border-[#44445a] rounded-md px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7065f0]" />
@@ -194,7 +173,7 @@ const onSubmit = async (data: FormSchema) => {
               name="age"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Idade</FormLabel>
+                  <FormLabel className="font-semibold text-[#7065f0]">Idade</FormLabel>
                   <FormControl>
                     <Input type="number" placeholder="Digite sua idade" {...field}
                     onChange={(e) => field.onChange(e.target.valueAsNumber)}
@@ -209,10 +188,10 @@ const onSubmit = async (data: FormSchema) => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-1">
-                    <FormLabel>Senha</FormLabel>
+                  <div className="flex justify-between">
+                    <FormLabel className="font-semibold text-[#7065f0]">Senha</FormLabel>
                     <Tooltip>
-                      <TooltipTrigger><InfoCircledIcon width={15} height={15}/></TooltipTrigger>
+                      <TooltipTrigger><InfoCircledIcon className="font-bold text-[#7065f0]" width={15} height={15}/></TooltipTrigger>
                       <TooltipContent>
                         <p>A senha deve conter pelo menos uma letra minúscula, uma letra maiúscula, um caractér especial e um número</p>
                       </TooltipContent>
@@ -227,15 +206,15 @@ const onSubmit = async (data: FormSchema) => {
               )}
             />
             <div className="flex flex-col gap-3">
-              <Button type="submit" className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]">Submit</Button>
-              <Button variant="outline" className="cursor-pointer text-black" onClick={handleReturnToHomePage}>Voltar</Button>
+              <Button type="submit" className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]">Cadastrar</Button>
+              <Button className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]" onClick={handleLoginPage}>Já possui uma conta ? Faça seu login</Button>
+              <Button variant="outline" className="cursor-pointer text-black" onClick={handleHomePage}>Voltar</Button>
             </div>
            </form>
-           
         </Form>
-        </div>
-      </section>
-    </div>
+      </div>
+    </section>
+  </div>
 
 
 
