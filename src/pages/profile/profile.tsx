@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import { toast } from "sonner";
 
 interface IUser {
   firstName: string;
@@ -18,7 +19,7 @@ const Profile = () => {
       const token = localStorage.getItem("accessToken");
 
       if (!token) {
-        setError("Token não encontrado. Faça login novamente.");
+        toast.error("Token não encontrado. Faça login novamente.");
         setLoading(false);
         return;
       }
@@ -63,13 +64,17 @@ const Profile = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
-    window.location.reload();
+    setLoading(false);
+    toast.success("Deslogando usuário...")
+    setTimeout(() => {
+  window.location.reload();
+}, 2000)
   };
 
   return (
     <div className="h-screen w-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 px-4">
       <h1 className="text-3xl font-bold text-[#e0e0ff] mb-6">
-        Bem-vindo, {user?.firstName}
+        Bem-vindo {user?.firstName}{" "}{user?.lastName}
       </h1>
       
 
