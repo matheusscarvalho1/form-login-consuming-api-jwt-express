@@ -1,6 +1,6 @@
 "use client"
 
- import { useState } from "react";
+ //import { useState } from "react";
 // import api from "../../services/api";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
@@ -21,7 +21,7 @@ import api from "@/services/api";
 
 const SignIn = () => {
 
-   const [loading, setLoading] = useState(false);
+   //const [loading, setLoading] = useState(false);
   
    const navigate = useNavigate();
 
@@ -75,7 +75,7 @@ type FormSchema = z.infer<typeof formSchema>
 
 
 const onSubmit = async (data: FormSchema) => {
-  setLoading(true);
+  //setLoading(true);
 
   try {
     await api.post("/user/create", data);
@@ -97,13 +97,13 @@ const onSubmit = async (data: FormSchema) => {
       return toast.error(message || "Usuário já existe.");
     } else {
       console.error(err);
-      setLoading(false);
+      //setLoading(false);
       return toast.error("Erro inesperado ao criar usuário.");
     }
 
     
   } finally {
-    setLoading(false);
+    //setLoading(false);
   }
 
   
