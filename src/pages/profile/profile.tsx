@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 import { toast } from "sonner";
+import ProgressLoading from "../components/loading/loading";
 
 interface IUser {
   firstName: string;
@@ -48,9 +49,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
-        Carregando...
-      </div>
+      <ProgressLoading />
     );
   }
 
