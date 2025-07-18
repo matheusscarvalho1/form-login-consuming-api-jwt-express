@@ -3,6 +3,8 @@ import api from "../../services/api";
 import { toast } from "sonner";
 import ProgressLoading from "../components/loading/loading";
 import { useNavigate } from "react-router";
+import { Loader2Icon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface IUser {
   firstName: string;
@@ -15,9 +17,10 @@ interface IUser {
 
 const Profile = () => {
   const navigate = useNavigate();
-  
+
   const [user, setUser] = useState<IUser | undefined>();
   const [loading, setLoading] = useState<boolean>(true);
+  const [logoutLoading, setLogoutLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -67,11 +70,11 @@ const Profile = () => {
   }
 
   const handleLogout = () => {
+    setLogoutLoading(true);
     localStorage.removeItem("accessToken");
-    setLoading(false);
     toast.success("Deslogando usuário...")
     setTimeout(() => {
-      navigate('/login');
+      navigate(0);
     }, 2000)
   };
 
@@ -104,9 +107,13 @@ const Profile = () => {
         </p>
       </div>
       <div className="mt-6">
-        <button className="bg-[#7065f0] text-white font-semibold py-2 px-4 rounded-lg hover:bg-[#5a54d1] transition-colors" onClick={handleLogout}>
-          Desconectar
-        </button>
+        <Button 
+          className="bg-[#7065f0] text-white font-semibold py-2 px-4 rounded-lg hover:bg-[#5a54d1] transition-colors" 
+          onClick={handleLogout} 
+          disabled={logoutLoading}>
+            {logoutLoading && <Loader2Icon className="animate-spin mr-2" />}
+            Desconectar
+        </Button>
       </div>
     </div>
   );

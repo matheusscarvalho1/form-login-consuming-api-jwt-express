@@ -17,7 +17,6 @@ import {
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Button } from "@/components/ui/button";
 import api from "@/services/api";
-import ProgressLoading from "../components/loading/loading";
 
 
 const SignIn = () => {
@@ -109,12 +108,6 @@ const onSubmit = async (data: FormSchema) => {
 
   
 };
-
-if (loading) {
-    return (
-      <ProgressLoading isAuthenticated={false} />
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-gray-900 to-gray-800 p-4 text-gray-100">

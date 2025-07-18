@@ -11,7 +11,7 @@ import { toast } from "sonner"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import ProgressLoading from "../components/loading/loading";
+import { Loader2Icon } from "lucide-react"
 
 function LogIn() {
    const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -67,12 +67,6 @@ function LogIn() {
     init();
   }, []);
 
-
-  if (loading) {
-    return (
-      <ProgressLoading isAuthenticated={false} />
-    );
-  }
 
       const onSubmit = async (data: FormSchema) => {
         setLoading(true);
@@ -160,7 +154,14 @@ function LogIn() {
               )}
             />
             <div className="flex flex-col gap-3">
-              <Button type="submit" className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]">Logar</Button>
+            <Button 
+              type="submit" 
+              className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]" 
+              disabled={loading}
+            >
+              {loading && <Loader2Icon className="animate-spin mr-2" />}
+              Logar
+            </Button>
               <Button className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]" onClick={handleSignIn}>Não possui uma conta ? Registre-se agora</Button>
               <Button variant="outline" className="cursor-pointer text-black" onClick={handleHomePage}>Voltar</Button>
             </div>
