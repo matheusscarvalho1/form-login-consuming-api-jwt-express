@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../services/api";
 import { toast } from "sonner";
 import ProgressLoading from "../components/loading/loading";
+import { useNavigate } from "react-router";
 
 interface IUser {
   firstName: string;
@@ -9,6 +10,8 @@ interface IUser {
   email: string;
   age: number;
 }
+
+const navigate = useNavigate();
 
 const Profile = () => {
   const [user, setUser] = useState<IUser | undefined>();
@@ -66,8 +69,8 @@ const Profile = () => {
     setLoading(false);
     toast.success("Deslogando usuário...")
     setTimeout(() => {
-  window.location.reload();
-}, 2000)
+      navigate('/login');
+    }, 2000)
   };
 
   return (
