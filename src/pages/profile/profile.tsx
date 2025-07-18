@@ -49,7 +49,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <ProgressLoading />
+      <ProgressLoading isAuthenticated={true} />
     );
   }
 

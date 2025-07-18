@@ -70,7 +70,7 @@ function LogIn() {
 
   if (loading) {
     return (
-      <ProgressLoading />
+      <ProgressLoading isAuthenticated={false} />
     );
   }
 
