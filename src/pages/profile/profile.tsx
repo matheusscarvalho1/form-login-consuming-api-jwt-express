@@ -11,9 +11,11 @@ interface IUser {
   age: number;
 }
 
-const navigate = useNavigate();
+
 
 const Profile = () => {
+  const navigate = useNavigate();
+  
   const [user, setUser] = useState<IUser | undefined>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
