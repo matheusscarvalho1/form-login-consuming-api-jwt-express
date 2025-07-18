@@ -15,7 +15,8 @@ import { Loader2Icon } from "lucide-react"
 
 function LogIn() {
    const [isAuthenticated, setIsAuthenticated] = useState(false);
-   const [loading, setLoading] = useState(true);
+   //const [loading, setLoading] = useState(true);
+   const [loadingLogin, setLoadingLogin] = useState(false)
   const navigate = useNavigate();
 
   const formSchema = z.object({
@@ -61,7 +62,7 @@ function LogIn() {
       } catch (error) {
         console.error("Authentication failed:", error);
       } finally {
-        setLoading(false);
+        //setLoading(false);
       }
     };
     init();
@@ -69,7 +70,7 @@ function LogIn() {
 
 
       const onSubmit = async (data: FormSchema) => {
-        setLoading(true);
+        setLoadingLogin(true);
 
         try {
           const response = await api.post("/authenticate/user", data);
@@ -94,19 +95,19 @@ function LogIn() {
           const message = err?.response?.data?.message;
 
           if (status === 400) {
-            setLoading(false);
+            //setLoading(false);
             return toast.error(message || "Erro nos dados enviados. Verifique os campos, caso não.");
           
           } else if (status === 401) {
-            setLoading(false);
+            //setLoading(false);
             return toast.error(message || "Credenciais inválidas, por favor, verifique novamente!");
           } else {
-            setLoading(false);
+            //setLoading(false);
             return toast.error("Erro inesperado ao criar usuário.");
           }
 
         } finally {
-          setLoading(false);
+          setLoadingLogin(false);
         }
 
       }
@@ -157,9 +158,9 @@ function LogIn() {
             <Button 
               type="submit" 
               className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]" 
-              disabled={loading}
+              disabled={loadingLogin}
             >
-              {loading && <Loader2Icon className="animate-spin mr-2" />}
+              {loadingLogin && <Loader2Icon className="animate-spin mr-2" />}
               Logar
             </Button>
               <Button className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]" onClick={handleSignIn}>Não possui uma conta ? Registre-se agora</Button>

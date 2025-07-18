@@ -30,6 +30,7 @@ const Profile = () => {
       if (!token) {
         toast.error("Token não encontrado. Faça login novamente.");
         setLoading(false);
+        navigate("/");
         return;
       }
 
@@ -73,8 +74,9 @@ const Profile = () => {
     setLogoutLoading(true);
     localStorage.removeItem("accessToken");
     toast.success("Deslogando usuário...")
+
     setTimeout(() => {
-      navigate(0);
+      navigate("/");
     }, 2000)
   };
 
