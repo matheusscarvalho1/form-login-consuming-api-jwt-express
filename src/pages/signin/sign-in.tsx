@@ -112,7 +112,7 @@ const onSubmit = async (data: FormSchema) => {
 
 if (loading) {
     return (
-      <ProgressLoading />
+      <ProgressLoading isAuthenticated={false} />
     );
   }
 
