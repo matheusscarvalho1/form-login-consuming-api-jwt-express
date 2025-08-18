@@ -279,10 +279,6 @@ Este frontend consome as APIs do projeto backend:
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
-## 📝 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
-
 ## 👨‍💻 Desenvolvido por
 
 **Matheus Carvalho**
@@ -290,6 +286,3 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 - LinkedIn: [@matheusscarvalho](https://www.linkedin.com/in/matheusscarvalho/)
 - GitHub: [@matheusscarvalho1](https://github.com/matheusscarvalho1)
 
----
-
-⭐ Se este projeto foi útil para você, considere dar uma estrela no repositório!
