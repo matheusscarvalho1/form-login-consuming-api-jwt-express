@@ -25,37 +25,26 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("accessToken");
+      try {
+        const response = await api.get<{ message: string; data: IUser }>(
+          `/user/get/profile`
+        );
 
-      if (!token) {
+        setUser(response.data.data);
+      } catch {
+        setError("Erro ao buscar informações do usuário.");
         toast.error("Token não encontrado. Faça login novamente.");
         setLoading(false);
         navigate("/");
         return;
-      }
 
-      try {
-        const response = await api.get<{ message: string; data: IUser }>(
-          `/user/get/profile`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setUser(response.data.data);
-      } catch (error) {
-        setError("Erro ao buscar informações do usuário.");
-        console.error(error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return (
