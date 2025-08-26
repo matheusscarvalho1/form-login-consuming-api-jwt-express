@@ -38,6 +38,7 @@ const Profile = () => {
         const response = await api.get<{ message: string; data: IUser }>(
           `/user/get/profile`,
           {
+            method: 'GET',
             headers: {
               Authorization: `Bearer ${token}`,
             },
