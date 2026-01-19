@@ -12,10 +12,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2Icon } from "lucide-react"
+import { AxiosError } from "axios";
 
 function LogIn() {
    const [isAuthenticated, setIsAuthenticated] = useState(false);
-   //const [loading, setLoading] = useState(true);
    const [loadingLogin, setLoadingLogin] = useState(false)
   const navigate = useNavigate();
 
@@ -73,9 +73,10 @@ function LogIn() {
         setLoadingLogin(true);
 
         try {
-          const response = await api.post("/authenticate/user", data);
+          const response = await api.post("/auth/user", data);
 
-          const { accessToken, refreshToken } = response.data.data.tokens
+
+          const { accessToken, refreshToken } = response.data.data
         
 
           if(!accessToken && refreshToken) {
@@ -89,23 +90,22 @@ function LogIn() {
           setIsAuthenticated(true);
      
           
-        } catch (err: any) {
+        } catch (error: unknown) {
+  if (error instanceof AxiosError) {
+    const status = error.response?.status;
+    const message = error.response?.data?.message;
 
-          const status = err?.response?.status;
-          const message = err?.response?.data?.message;
+    if (status === 400) {
+      return toast.error(message || "Erro nos dados enviados.");
+    }
 
-          if (status === 400) {
-            //setLoading(false);
-            return toast.error(message || "Erro nos dados enviados. Verifique os campos, caso não.");
-          
-          } else if (status === 401) {
-            //setLoading(false);
-            return toast.error(message || "Credenciais inválidas, por favor, verifique novamente!");
-          } else {
-            //setLoading(false);
-            return toast.error("Erro inesperado ao criar usuário.");
-          }
-
+    if (status === 401) {
+      return toast.error(message || "Credenciais inválidas.");
+    }
+  } else {
+    console.error(error);
+    toast.error("Erro inesperado ao realizar login.");
+  }
         } finally {
           setLoadingLogin(false);
         }

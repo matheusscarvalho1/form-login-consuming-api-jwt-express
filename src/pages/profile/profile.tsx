@@ -18,7 +18,7 @@ interface IUser {
 const Profile = () => {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState<IUser | undefined>();
+  const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [logoutLoading, setLogoutLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null);
@@ -28,10 +28,9 @@ const Profile = () => {
       const token = localStorage.getItem("accessToken");
 
       if (!token) {
-        toast.error("Token não encontrado. Faça login novamente.");
         setLoading(false);
         navigate("/");
-        return;
+        return toast.error("Token não encontrado. Faça login novamente.");;
       }
 
       try {
@@ -45,16 +44,17 @@ const Profile = () => {
         );
 
         setUser(response.data.data);
-      } catch (error) {
-        setError("Erro ao buscar informações do usuário.");
+      } catch (error: unknown) {
         console.error(error);
+        setError("Erro ao buscar informações do usuário.");
+
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return (

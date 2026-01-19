@@ -1,7 +1,6 @@
 "use client"
 
- //import { useState } from "react";
-// import api from "../../services/api";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input"
@@ -17,20 +16,16 @@ import {
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { Button } from "@/components/ui/button";
 import api from "@/services/api";
+import { AxiosError } from "axios";
 
 
 const SignIn = () => {
+  const [loading, setLoading] = useState(false);
 
-   //const [loading, setLoading] = useState(false);
-  
-   const navigate = useNavigate();
-
-
+  const navigate = useNavigate();
   const handleHomePage = () => {
     navigate("/");
-
   }
-
   const handleLoginPage = () => {
     navigate("/login")
   }
@@ -75,8 +70,7 @@ type FormSchema = z.infer<typeof formSchema>
 
 
 const onSubmit = async (data: FormSchema) => {
-  //setLoading(true);
-
+  setLoading(true);
   try {
     await api.post("/user/create", data);
 
@@ -86,24 +80,25 @@ const onSubmit = async (data: FormSchema) => {
       handleLoginPage();
     }, 3000)
   
-  } catch (err: any) {
-    const status = err?.response?.status;
-    const message = err?.response?.data?.message;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+    const status = error.response?.status;
+    const message = error.response?.data?.message;
 
     if (status === 400) {
-      return toast.error(message || "Erro nos dados enviados. Verifique os campos.");
-     
-    } else if (status === 409) {
-      return toast.error(message || "Usuário já existe.");
-    } else {
-      console.error(err);
-      //setLoading(false);
-      return toast.error("Erro inesperado ao criar usuário.");
+      return toast.error(message || "Erro nos dados enviados.");
     }
+
+    if (status === 409) {
+      return toast.error(message || "Usuário já existe.");
+    }
+    console.error(error);
+  toast.error("Erro inesperado ao criar usuário.");
+  }
 
     
   } finally {
-    //setLoading(false);
+    setLoading(false);
   }
 
   
@@ -199,9 +194,9 @@ const onSubmit = async (data: FormSchema) => {
               )}
             />
             <div className="flex flex-col gap-3">
-              <Button type="submit" className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]">Cadastrar</Button>
-              <Button className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]" onClick={handleLoginPage}>Já possui uma conta ? Faça seu login</Button>
-              <Button variant="outline" className="cursor-pointer text-black" onClick={handleHomePage}>Voltar</Button>
+              <Button type="submit" className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]" disabled={loading}>{loading ? "Cadastrando..." : "Cadastrar"}</Button>
+              <Button className="w-full cursor-pointer bg-[#7065f0] hover:bg-[#5d52dc]" type="button" onClick={handleLoginPage}>Já possui uma conta ? Faça seu login</Button>
+              <Button variant="outline" className="cursor-pointer text-black" type="button" onClick={handleHomePage}>Voltar</Button>
             </div>
            </form>
         </Form>
